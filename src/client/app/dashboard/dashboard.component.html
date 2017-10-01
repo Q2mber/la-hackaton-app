@@ -1,0 +1,35 @@
+<div fxLayout="row">
+  <div fxLayout="column" fxFlex>
+    <h2>Users <button md-button (click)="addUser()" color="primary">Add</button></h2>
+    <div fxFlex="90" fxLayout="column">
+      <md-card *ngFor="let user of users">
+        <md-card-title>{{user.userId}}</md-card-title>
+        <md-card-subtitle>Secret:{{user.secret}}</md-card-subtitle>
+        <md-card-content>
+          <div>Verified:{{user.verified}}</div>
+          <div>Identity:{{user.identity}}</div>
+          <div>Identity:{{user.identity}}</div>
+        </md-card-content>
+        <md-card-actions>
+          <button md-raised-button (click)="uploadDocument(user)" color="primary">Upload Document</button>
+        </md-card-actions>
+      </md-card>
+    </div>
+  </div>
+
+
+  <div fxLayout="column" fxFlex>
+    <h2>Managers <button md-button (click)="addManager()" color="primary">Add</button></h2>
+    <div fxFlex="90" fxLayout="column">
+      <md-card *ngFor="let manager of managers">
+        <md-card-title>{{manager.userId}}</md-card-title>
+        <md-card-subtitle>Secret:{{manager.secret}}</md-card-subtitle>
+        <md-card-content>
+
+        </md-card-content>
+      </md-card>
+    </div>
+  </div>
+
+
+</div>

@@ -1,0 +1,16 @@
+<h2>Upload document</h2>
+<div fxLayout="column">
+  <md-select [(ngModel)]="type" placeholder="Document type">
+    <md-option [value]="'IDENTITY'">
+      Identity
+    </md-option>
+    <md-option [value]="'ADDRESS'">
+      Address
+    </md-option>
+  </md-select>
+
+  <input type="file" class="file" #fileInput placeholder="Upload file..." />
+
+  <button md-raised-button type="button" (click)="upload()"color="primary">Upload Document</button>
+
+</div>
