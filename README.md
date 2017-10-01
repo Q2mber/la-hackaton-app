@@ -1,6 +1,6 @@
-# angular2-with-express-starter
+# la-hacaton-app
 
-For using **angular2-with-express-starter** you have to be installed globally:
+For using **la-hacaton-app** you have to be installed globally:
 [node.js](https://nodejs.org/en/), [npm](https://www.npmjs.com/get-npm?utm_source=house&utm_medium=homepage&utm_campaign=free%20orgs&utm_term=Install%20npm), [nodemon](https://github.com/remy/nodemon), [typescript](https://www.npmjs.com/package/typescript), [angular CLI](https://github.com/angular/angular-cli)
 
 First, clone the project:
@@ -16,7 +16,7 @@ $ npm install
 
 # Run the project in developer mode
 
-For running the **angular2-with-express-starter**, you can run **express server** and **angular CLI** separately in two different terminals:
+For running the **la-hacaton-app**, you can run **express server** and **angular CLI** separately in two different terminals:
 ```bash
 $ npm run startExpress
 ```
