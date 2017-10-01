@@ -30,7 +30,7 @@ export class UploadDocumentPopupComponent implements OnInit {
     console.log()
     if (fileBrowser.files && fileBrowser.files[0]) {
       const formData = new FormData();
-      formData.append("image", fileBrowser.files[0]);
+      formData.append("ipfsFile", fileBrowser.files[0]);
       console.log(formData, fileBrowser.files[0])
       this.dataService.uploadFile(formData).then(data => {
         this.userService.uploadDocument({

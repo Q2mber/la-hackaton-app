@@ -46,7 +46,6 @@ export class DashboardComponent implements OnInit {
           return d
         })
 
-
         if (!this.managers.length) {
           this.addManager()
         }
@@ -93,7 +92,7 @@ export class DashboardComponent implements OnInit {
     });
 
     dialogRef.afterClosed().subscribe(result => {
-      this.addManager()
+
     });
   }
 
@@ -104,12 +103,12 @@ export class DashboardComponent implements OnInit {
       userId: manager.userId,
       document: {
         $class: manager.documents[i].$class,
-        documentId:  manager.documents[i].documentId,
-        hash:  manager.documents[i].hash,
-        owner:  manager.documents[i].owner,
-        secret:  manager.documents[i].secret,
-        status:  manager.documents[i].status,
-        type:  manager.documents[i].type
+        documentId: manager.documents[i].documentId,
+        hash: manager.documents[i].hash,
+        owner: manager.documents[i].owner,
+        secret: manager.documents[i].secret,
+        status: manager.documents[i].status,
+        type: manager.documents[i].type
       },
       status: manager.documents[i].selectedStatus
     }).then(data => {

@@ -1,16 +1,16 @@
 {
-  "/api/file/upload": {
-    "target": "http://localhost:4220",
+  "/api/ipfs/file": {
+    "target": "http://localhost:65533",
     "secure": false,
     "logLevel": "debug"
   },
   "/api/io.devorchestra.kyc.Document/process": {
-    "target": "http://localhost:4220",
+    "target": "http://localhost:65533",
     "secure": false,
     "logLevel": "debug"
   },
   "/api/io.devorchestra.kyc.Document/list": {
-    "target": "http://localhost:4220",
+    "target": "http://localhost:65533",
     "secure": false,
     "logLevel": "debug"
   },

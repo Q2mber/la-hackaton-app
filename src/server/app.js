@@ -95,7 +95,34 @@ app.post('/api/io.devorchestra.kyc.Document/list', function (req, res) {
 
 });
 
- 
+app.post('/api/io.devorchestra.kyc.Document/process', function (req, res) {
+  return bizNetworkConnection.disconnect().then(result => {
+    return bizNetworkConnection.connect(CONNECTION_PROFILE_NAME, businessNetworkIdentifier, req.body.userId, req.body.userSecret)
+  })
+    .then(result => {
+      return bizNetworkConnection.getAssetRegistry('io.devorchestra.kyc.Document')
+        .then((assetRegistry) => {
+          return assetRegistry.get(req.body.document.documentId)
+        }).then(doc=>{
+          let serializer = bizNetworkConnection.getBusinessNetwork().getSerializer();
+          console.log(req.body.status)
+          let resource = serializer.fromJSON({
+            '$class': 'io.devorchestra.kyc.ProcessDocument',
+            'status':req.body.status,
+            'document':req.body.document.documentId
+          });
+
+          return bizNetworkConnection.submitTransaction(resource);
+        })
+        .then((result) => {
+          return res.send({error:false})
+        }).catch(err => {
+          console.log(err)
+        });
+    });
+
+});
+
 app.post('/api/ipfs/file', multer({inMemory: true}).single('ipfsFile'),function (req, res, next) {
   console.log("UPLOAD");
   if (!req.file) return res.sendStatus(400);

@@ -22,7 +22,7 @@ export class DataService {
   }
 
   uploadFile(data): Promise<any> {
-    return this.http.post(`/api/file/upload`, data)
+    return this.http.post(`/api/ipfs/file`, data)
       .toPromise()
       .then(this.sendResponse)
       .catch(this.handleError);
