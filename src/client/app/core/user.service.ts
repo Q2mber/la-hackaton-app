@@ -79,6 +79,13 @@ export class UserService {
       .catch(this.handleError);
   }
 
+  processDocument(data): Promise<any> {
+    return this.http.post(`/api/io.devorchestra.kyc.Document/process`,data)
+      .toPromise()
+      .then(this.sendResponse)
+      .catch(this.handleError);
+  }
+
   createIdentity(data): Promise<any> {
     let user;
     return (() => {

@@ -4,6 +4,11 @@
     "secure": false,
     "logLevel": "debug"
   },
+  "/api/io.devorchestra.kyc.Document/process": {
+    "target": "http://localhost:4220",
+    "secure": false,
+    "logLevel": "debug"
+  },
   "/api/io.devorchestra.kyc.Document/list": {
     "target": "http://localhost:4220",
     "secure": false,

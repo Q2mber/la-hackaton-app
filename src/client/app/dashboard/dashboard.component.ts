@@ -21,46 +21,65 @@ export class DashboardComponent implements OnInit {
   }
 
   ngOnInit() {
-    this.userService.getUsers().then(data => {
-      this.users = _.filter(data, d => {
-        return localStorage.getItem(d.userId);
-      }).map((d, i) => {
-        d.secret = localStorage.getItem(d.userId)
-        d.name = d.userId
-        return d
+    Promise.all([
+      //Load users
+      this.userService.getUsers().then(data => {
+        this.users = _.filter(data, d => {
+          return localStorage.getItem(d.userId);
+        }).map((d, i) => {
+          d.secret = localStorage.getItem(d.userId)
+          d.name = d.userId
+          return d
+        })
+
+        if (!this.users.length) {
+          this.addUser()
+        }
+      }),
+      //Load managers
+      this.userService.getManagers().then(data => {
+        this.managers = _.filter(data, d => {
+          return localStorage.getItem(d.userId);
+        }).map(d => {
+          d.secret = localStorage.getItem(d.userId)
+          d.name = d.userId
+          return d
+        })
+
+
+        if (!this.managers.length) {
+          this.addManager()
+        }
       })
+    ]).then(d => {
+      const allUsers = this.users.concat(this.managers)
+
+
       // peer returns MVCC_READ_CONFLICT on Promise.all
       var p = Promise.resolve();
-      for (let i = 0; i < this.users.length; i++) {
+      for (let i = 0; i < allUsers.length; i++) {
         p = p.then(() => {
           return this.userService.getDocuments({
-            userId: this.users[i].userId,
-            userSecret: this.users[i].secret,
+            userId: allUsers[i].userId,
+            userSecret: allUsers[i].secret,
           }).then(documents => {
-            this.users[i].documents = documents;
+            if (allUsers[i].userId.indexOf('USER') > -1) {
+              _.find(this.users, u => {
+                return u.userId == allUsers[i].userId
+              }).documents = documents
+            }
+
+            if (allUsers[i].userId.indexOf('MANAGER') > -1) {
+              _.find(this.managers, u => {
+                return u.userId == allUsers[i].userId
+              }).documents = documents
+            }
           })
         });
       }
-      console.log(this.users)
-      if (!this.users.length) {
-        this.addUser()
-      }
+
+
     })
-
-    this.userService.getManagers().then(data => {
-      this.managers = _.filter(data, d => {
-        return localStorage.getItem(d.userId);
-      }).map(d => {
-        d.secret = localStorage.getItem(d.userId)
-        d.name = d.userId
-        return d
-      })
-
-      if (!this.managers.length) {
-        this.addManager()
-      }
-    })
-
 
   }
 
@@ -78,6 +97,25 @@ export class DashboardComponent implements OnInit {
     });
   }
 
+
+  processDocument(manager, i) {
+    this.userService.processDocument({
+      userSecret: manager.secret,
+      userId: manager.userId,
+      document: {
+        $class: manager.documents[i].$class,
+        documentId:  manager.documents[i].documentId,
+        hash:  manager.documents[i].hash,
+        owner:  manager.documents[i].owner,
+        secret:  manager.documents[i].secret,
+        status:  manager.documents[i].status,
+        type:  manager.documents[i].type
+      },
+      status: manager.documents[i].selectedStatus
+    }).then(data => {
+      manager.documents[i].status = manager.documents[i].newStatus;
+    })
+  }
 
   addUser() {
     this.userService.createIdentity({
@@ -100,4 +138,6 @@ export class DashboardComponent implements OnInit {
       this.managers.push(manager)
     })
   }
+
+
 }

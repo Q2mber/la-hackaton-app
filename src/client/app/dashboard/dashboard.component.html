@@ -1,6 +1,8 @@
 <div fxLayout="row">
   <div fxLayout="column" fxFlex>
-    <h2>Users <button md-button (click)="addUser()" color="primary">Add</button></h2>
+    <h2>Users
+      <button md-button (click)="addUser()" color="primary">Add</button>
+    </h2>
     <div fxFlex="90" fxLayout="column">
       <md-card *ngFor="let user of users; let i = index">
         <md-card-title>{{user.userId}}</md-card-title>
@@ -15,6 +17,7 @@
           <div *ngFor="let doc of user.documents; let j = index" fxLayout="row">
             <img fxFlex md-card-image src="https://angular.io/assets/images/logos/angular/angular.svg">
             <div fxFlex fxLayout="column" fxLayoutAlign="center center">
+              <div>ID:{{doc.documentId}}</div>
               <div>TYPE:{{doc.type}}</div>
               <div>STATUS:{{doc.status}}</div>
             </div>
@@ -22,7 +25,7 @@
 
 
         </md-card-content>
-        <md-card-actions>
+        <md-card-actions fxLayout="row" fxLayoutAlign="right">
           <button md-raised-button (click)="uploadDocument(user, i)" color="primary">Upload Document</button>
         </md-card-actions>
       </md-card>
@@ -31,14 +34,36 @@
 
 
   <div fxLayout="column" fxFlex>
-    <h2>Managers <button md-button (click)="addManager()" color="primary">Add</button></h2>
+    <h2>Managers
+      <button md-button (click)="addManager()" color="primary">Add</button>
+    </h2>
     <div fxFlex="90" fxLayout="column">
-      <md-card *ngFor="let manager of managers">
+      <md-card *ngFor="let manager of managers;let i = index">
         <md-card-title>{{manager.userId}}</md-card-title>
         <md-card-subtitle>Secret:{{manager.secret}}</md-card-subtitle>
         <md-card-content>
+          <div *ngFor="let doc of manager.documents; let j = index" fxLayout="row">
+            <img fxFlex md-card-image src="https://angular.io/assets/images/logos/angular/angular.svg">
+            <div fxFlex fxLayout="column" fxLayoutAlign="center center">
+              <div>ID:{{doc.documentId}}</div>
+              <div>TYPE:{{doc.type}}</div>
+              <div>STATUS:{{doc.status}}</div>
+              <md-select [(ngModel)]="doc.selectedStatus" placeholder="Status">
+                <md-option [value]="'APPROVED'">
+                  APPROVED
+                </md-option>
+                <md-option [value]="'REJECTED'">
+                  REJECTED
+                </md-option>
+              </md-select>
+              <button md-raised-button (click)="processDocument(manager, j)" color="primary">Approve</button>
+            </div>
 
+          </div>
         </md-card-content>
+        <md-card-actions fxLayout="row" fxLayoutAlign="right">
+
+        </md-card-actions>
       </md-card>
     </div>
   </div>
