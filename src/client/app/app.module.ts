@@ -9,6 +9,8 @@ import { LayoutModule } from './layout/layout.module';
 import { SettingsModule } from './settings/settings.module';
 import {UploadDocumentPopupComponent} from "./dashboard/upload-document-popup/upload-document-popup.component";
 import { SharedModule } from './shared/shared.module';
+
+
 @NgModule({
   declarations: [
     AppComponent,

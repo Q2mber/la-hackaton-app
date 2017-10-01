@@ -26,7 +26,7 @@
 
         </md-card-content>
         <md-card-actions fxLayout="row" fxLayoutAlign="end">
-          <button md-raised-button (click)="uploadDocument(user, i)" color="primary">Upload Document</button>
+          <button class="green-button" md-raised-button (click)="uploadDocument(user, i)" color="primary">Upload Document</button>
         </md-card-actions>
       </md-card>
     </div>
@@ -56,7 +56,7 @@
                   REJECTED
                 </md-option>
               </md-select>
-              <button class="manager-button" md-raised-button (click)="processDocument(manager, j)" color="primary">Approve</button>
+              <button class="manager-button green-button" md-raised-button (click)="processDocument(manager, j)" color="primary">Approve</button>
             </div>
 
           </div>

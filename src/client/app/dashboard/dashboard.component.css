@@ -9,7 +9,7 @@
 /*}*/
 h2{
   color:#333;
-  padding: 16px 24px;
+  padding: 16px 32px;
 }
 
 md-card{
@@ -34,4 +34,8 @@ md-card{
 
 .manager-button{
   margin-top:16px;
+}
+
+.green-button{
+  color:#fff;
 }

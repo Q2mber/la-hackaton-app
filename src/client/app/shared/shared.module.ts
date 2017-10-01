@@ -10,6 +10,8 @@ import { MaterialModule, MdNativeDateModule } from '@angular/material'
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { MdMenuModule, MdButtonModule, MdToolbarModule, MdCardModule, MdSidenavModule, MdInputModule, MdSelectModule,
   MdTabsModule, MdRadioModule,MdDialogModule}               from '@angular/material';
+import { BrowserXhr, HttpModule } from '@angular/http';
+import { NgProgressModule, NgProgressBrowserXhr } from 'ngx-progressbar';
 
 @NgModule({
   imports: [
@@ -21,6 +23,7 @@ import { MdMenuModule, MdButtonModule, MdToolbarModule, MdCardModule, MdSidenavM
     MaterialModule,
     MdNativeDateModule,
     BrowserAnimationsModule,
+    NgProgressModule,
 
     MdMenuModule,
     MdButtonModule,
@@ -33,6 +36,9 @@ import { MdMenuModule, MdButtonModule, MdToolbarModule, MdCardModule, MdSidenavM
     MdRadioModule,
     MdDialogModule
   ],
+  providers: [
+    { provide: BrowserXhr, useClass: NgProgressBrowserXhr }
+  ],
   declarations: [],
   exports: [
     CommonModule,
@@ -43,6 +49,8 @@ import { MdMenuModule, MdButtonModule, MdToolbarModule, MdCardModule, MdSidenavM
     MaterialModule,
     MdNativeDateModule,
     BrowserAnimationsModule,
+    HttpModule,
+    NgProgressModule,
 
     MdMenuModule,
     MdButtonModule,

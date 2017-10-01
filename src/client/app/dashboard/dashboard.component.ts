@@ -21,6 +21,10 @@ export class DashboardComponent implements OnInit {
   }
 
   ngOnInit() {
+    this.updateDashboard()
+  }
+
+  updateDashboard(){
     Promise.all([
       //Load users
       this.userService.getUsers().then(data => {
@@ -76,12 +80,8 @@ export class DashboardComponent implements OnInit {
           })
         });
       }
-
-
     })
-
   }
-
   uploadDocument(user, i) {
     let dialogRef = this.dialog.open(UploadDocumentPopupComponent, {
       width: '330px',
@@ -92,7 +92,7 @@ export class DashboardComponent implements OnInit {
     });
 
     dialogRef.afterClosed().subscribe(result => {
-
+      this.updateDashboard()
     });
   }
 
@@ -113,6 +113,7 @@ export class DashboardComponent implements OnInit {
       status: manager.documents[i].selectedStatus
     }).then(data => {
       manager.documents[i].status = manager.documents[i].newStatus;
+      this.updateDashboard()
     })
   }
 
