@@ -3,20 +3,18 @@
 const express = require('express');
 const logger = require('morgan');
 const crypto = require('crypto');
-const port = parseInt(process.env.PORT, 10) || 4220;
 const bodyParser = require('body-parser');
-const proxy = require('express-http-proxy');
-const app = express();
+const multer         = require('multer');
+const fileUpload = require('express-fileupload');
+const ipfsAPI = require('ipfs-api')
+const async = require('async');
+
+
 const BusinessNetworkConnection = require('composer-client').BusinessNetworkConnection;
-
-
 const bizNetworkConnection = new BusinessNetworkConnection();
 const CONNECTION_PROFILE_NAME = 'hlfv1';
 const businessNetworkIdentifier = 'hyper-file-storage';
 
-
-app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({extended: false}));
 
 // bizNetworkConnection.connect(CONNECTION_PROFILE_NAME, businessNetworkIdentifier, 'admin', 'adminpw')
 //   .then((result) => {
@@ -38,9 +36,21 @@ app.use(bodyParser.urlencoded({extended: false}));
 // });
 
 
+
 /**
- * Default instructions
+ *  IPFS
  */
+
+// connect to ipfs daemon API server
+let ipfs = ipfsAPI('localhost', '5001', {protocol: 'http'}) // leaving out the arguments will default to these values
+
+/**
+ * EXPRESS
+ */
+const port = parseInt(process.env.PORT, 10) || 65533;
+const app = express();
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({ extended: false }));
 app.use(logger('dev'));
 app.use(express.static('./dist/'))
 
@@ -62,14 +72,6 @@ app.use(require('express-session')({
 /**
  * Routes configure
  */
-app.post('/api/file/upload', function (req, res) {
-  console.log("UPLOAD")
-  res.send({
-    hash: 'hash',
-    secret: 'secret'
-  })
-});
-
 app.post('/api/io.devorchestra.kyc.Document/list', function (req, res) {
   console.log("BODY", req.body)
   return bizNetworkConnection.disconnect().then(result => {
@@ -93,9 +95,39 @@ app.post('/api/io.devorchestra.kyc.Document/list', function (req, res) {
 
 });
 
+ 
+app.post('/api/ipfs/file', multer({inMemory: true}).single('ipfsFile'),function (req, res, next) {
+  console.log("UPLOAD");
+  if (!req.file) return res.sendStatus(400);
+  console.log(req.file.buffer);
+  let secret = crypto.randomBytes(12).toString('hex');
+  let crypted = encrypt(req.file.buffer, secret);
+  ipfs.files.add(crypted, (err, answ) => {
+    if (err) return next(err);
+    let hash = answ[0].hash;
+    res.send({hash, secret});
+  });
+});
+
+app.get('/api/ipfs/file', function (req, res, next) {
+  console.log("GET");
+  let {secret, hash} = req.query;
+  ipfs.files.cat(hash, (err, stream) => {
+    if (err) {
+      console.log(err);
+      return next(err);
+    }
+    let decrypt = crypto.createDecipher('aes-256-ctr', secret);
+    stream.pipe(decrypt).pipe(res);
+  });
+});
 app.use('/*', express.static('./dist/index.html'));
 //TODO HTTPS
 
+
+app.use((req, res) => {
+  res.sendStatus(404);
+});
 
 /**
  * Error handler
@@ -110,8 +142,7 @@ app.use(function (err, req, res, next) {
   res.locals.error = req.app.get('env') === 'development' ? err : {};
   console.log(err);
   // // render the error page
-  res.status(err.status || 500);
-  res.render('error');
+  res.sendStatus(err.status || 500);
 });
 
 
@@ -123,3 +154,10 @@ app.listen(port, function () {
 });
 
 module.exports = app;
+
+
+function encrypt(buffer, secret){
+  let cipher = crypto.createCipher('aes-256-ctr', secret)
+  let crypted = Buffer.concat([cipher.update(buffer),cipher.final()]);
+  return crypted;
+}
