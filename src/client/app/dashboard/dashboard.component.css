@@ -15,3 +15,11 @@ h2{
 md-card{
   margin:8px 32px;
 }
+
+.chips{
+
+}
+
+.mat-card-image{
+  margin:0!important;
+}

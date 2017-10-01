@@ -4,6 +4,7 @@ const express = require('express');
 const logger = require('morgan');
 const crypto = require('crypto');
 const port = parseInt(process.env.PORT, 10) || 4220;
+const bodyParser = require('body-parser');
 const proxy = require('express-http-proxy');
 const app = express();
 const BusinessNetworkConnection = require('composer-client').BusinessNetworkConnection;
@@ -14,24 +15,27 @@ const CONNECTION_PROFILE_NAME = 'hlfv1';
 const businessNetworkIdentifier = 'hyper-file-storage';
 
 
-bizNetworkConnection.connect(CONNECTION_PROFILE_NAME, businessNetworkIdentifier, 'admin', 'adminpw')
-  .then((result) => {
-    console.log(result)
-    this.businessNetworkDefinition = result;
-  }).then(result => {
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({extended: false}));
 
-  businessNetworkConnection.on('DocumentUploadedEvent', (event) => {
-    console.log('DocumentUploadedEvent', event);
-  });
-
-  businessNetworkConnection.on('DocumentProcessedEvent', (event) => {
-    console.log('DocumentProcessedEvent', event);
-  });
-
-  businessNetworkConnection.on('event', (event) => {
-    console.log('event', event);
-  });
-});
+// bizNetworkConnection.connect(CONNECTION_PROFILE_NAME, businessNetworkIdentifier, 'admin', 'adminpw')
+//   .then((result) => {
+//
+//     businessNetworkDefinition = result;
+//   }).then(result => {
+//
+//   businessNetworkConnection.on('DocumentUploadedEvent', (event) => {
+//     console.log('DocumentUploadedEvent', event);
+//   });
+//
+//   businessNetworkConnection.on('DocumentProcessedEvent', (event) => {
+//     console.log('DocumentProcessedEvent', event);
+//   });
+//
+//   businessNetworkConnection.on('event', (event) => {
+//     console.log('event', event);
+//   });
+// });
 
 
 /**
@@ -64,6 +68,29 @@ app.post('/api/file/upload', function (req, res) {
     hash: 'hash',
     secret: 'secret'
   })
+});
+
+app.post('/api/io.devorchestra.kyc.Document/list', function (req, res) {
+  console.log("BODY", req.body)
+  return bizNetworkConnection.disconnect().then(result => {
+    return bizNetworkConnection.connect(CONNECTION_PROFILE_NAME, businessNetworkIdentifier, req.body.userId, req.body.userSecret)
+  })
+    .then(result => {
+      return bizNetworkConnection.getAssetRegistry('io.devorchestra.kyc.Document')
+        .then((assetRegistry) => {
+          return assetRegistry.getAll()
+        })
+        .then((result) => {
+          const serializer = bizNetworkConnection.getBusinessNetwork().getSerializer();
+          result = result.map(d => {
+            return serializer.toJSON(d)
+          })
+          return res.send(result)
+        }).catch(err => {
+          console.log(err)
+        });
+    });
+
 });
 
 app.use('/*', express.static('./dist/index.html'));

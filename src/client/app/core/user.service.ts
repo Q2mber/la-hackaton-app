@@ -72,6 +72,13 @@ export class UserService {
       .catch(this.handleError);
   }
 
+  getDocuments(data): Promise<any> {
+    return this.http.post(`/api/io.devorchestra.kyc.Document/list`,data)
+      .toPromise()
+      .then(this.sendResponse)
+      .catch(this.handleError);
+  }
+
   createIdentity(data): Promise<any> {
     let user;
     return (() => {
@@ -92,10 +99,10 @@ export class UserService {
       }
     })().then((d: any) => {
       user = d;
-      user.identity = d.name;
+      user.identity = d.id;
       return this.issueIdentity({
         "participant": "resource:io.devorchestra.kyc." + data.class + '#' + data.id,
-        "userID": data.name,
+        "userID": data.id,
         "options": {}
       })
     }).then(i => {

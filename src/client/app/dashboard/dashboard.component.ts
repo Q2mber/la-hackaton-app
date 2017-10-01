@@ -21,52 +21,30 @@ export class DashboardComponent implements OnInit {
   }
 
   ngOnInit() {
-
-
-    // this.userService.getUsers().then(data => {
-    //   if (data.length) {
-    //     this.users = data
-    //   }else{
-    //     this.userService.createUser({
-    //       "$class": "io.devorchestra.kyc.User",
-    //       "userId": "USER"+this.users.length,
-    //       "verified": "false",
-    //       "identity": "false",
-    //       "address": "false"
-    //     }).then(user=>{
-    //       this.users.push(user)
-    //     })
-    //   }
-    // })
-    //
-    // this.userService.getManagers().then(data => {
-    //   if (data.length) {
-    //     this.managers = data
-    //   }else{
-    //     this.userService.createManager({
-    //       "$class": "io.devorchestra.kyc.Manager",
-    //       "userId": "MANAGER"+this.managers.length,
-    //     }).then(user=>{
-    //       this.managers.push(user)
-    //     })
-    //   }
-    // })
-    //
-    // this.userService.issueIdentity({
-    //   "participant": "string",
-    //   "userID": "string",
-    //   "options": {}
-    // })
-
     this.userService.getUsers().then(data => {
       this.users = _.filter(data, d => {
         return localStorage.getItem(d.userId);
-      }).map(d => {
+      }).map((d, i) => {
         d.secret = localStorage.getItem(d.userId)
         d.name = d.userId
         return d
       })
-      console.log('this.users', this.users)
+      // peer returns MVCC_READ_CONFLICT on Promise.all
+      var p = Promise.resolve();
+      for (let i = 0; i < this.users.length; i++) {
+        p = p.then(() => {
+          return this.userService.getDocuments({
+            userId: this.users[i].userId,
+            userSecret: this.users[i].secret,
+          }).then(documents => {
+            this.users[i].documents = documents;
+          })
+        });
+      }
+      console.log(this.users)
+      if (!this.users.length) {
+        this.addUser()
+      }
     })
 
     this.userService.getManagers().then(data => {
@@ -78,18 +56,15 @@ export class DashboardComponent implements OnInit {
         return d
       })
 
+      if (!this.managers.length) {
+        this.addManager()
+      }
     })
 
-    if (!this.users.length) {
-      this.addUser()
-    }
 
-    if (!this.managers.length) {
-
-    }
   }
 
-  uploadDocument(user) {
+  uploadDocument(user, i) {
     let dialogRef = this.dialog.open(UploadDocumentPopupComponent, {
       width: '330px',
       data: {
